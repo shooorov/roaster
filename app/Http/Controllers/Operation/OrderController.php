@@ -34,6 +34,7 @@ use App\UseBranch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -93,6 +94,7 @@ class OrderController extends Controller
                 'manager_id' => $request->manager_id ?? '',
                 'waiter_id' => $request->waiter_id ?? '',
                 'customer_id' => $request->customer_id ?? '',
+                'customer_name' => $request->customer_name ?? '',
                 'payment_method_id' => $request->payment_method_id ?? '',
                 'bill_status' => $request->bill_status ?? '',
                 'end_date' => $request->end_date ? Helpers::operationDay($end_date) : null,
@@ -199,9 +201,11 @@ class OrderController extends Controller
 
         return $record_collection;
     }
+
     public function load(Request $request)
     {
-        // dd($request);
+        // Log::info('Filter request:', $request->all());
+        // dd($request->customer_id);
         // die();
         $start = $request->start ?? 0;
         $length = $request->length ?? -1;
@@ -229,6 +233,8 @@ class OrderController extends Controller
         }
 
         $records = Order::query()
+            ->leftJoin('payment_methods', 'orders.payment_method_id', '=', 'payment_methods.id')
+            ->select('orders.*')
             ->when($start_date, function ($query, $start_date) {
                 $query->where('orders.date', '>=', $start_date);
             })
