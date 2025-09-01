@@ -80,15 +80,16 @@ const loadAjaxData = () => {
             type: 'GET',
             data: form
         },
-        createdRow: function (row, data) {
-            // Turn row red if due_amount > 0
+        order: [[1, 'desc']],
+        rowCallback: function (row, data) {
             if (parseFloat(data.due_amount) > 0) {
-                $(row).addClass('text-red-700')
+                // row.style.backgroundColor = '#fee2e2' // light red
+                row.style.color = '#b91c1c' // dark red text
             } else {
-                $(row).addClass('text-gray-700')
+                row.style.backgroundColor = ''
+                row.style.color = ''
             }
         },
-        order: [[1, 'desc']],
         columns: [
             {
                 data: 'SrNo',
@@ -117,7 +118,7 @@ const loadAjaxData = () => {
             { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'total' },
             { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'due_amount' },
             { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5', data: 'action', sortable: false }
-        ]
+        ],
     })
 }
 

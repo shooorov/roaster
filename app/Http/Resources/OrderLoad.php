@@ -36,27 +36,26 @@ class OrderLoad extends JsonResource
             $imageUrl = asset('img/product.jpg'); // or any placeholder URL
         }
         $customer = Customer::find($this->customer_id);
+        $due_amount = $this->total - $this->cash;
         return [
-            'is_complete' => $this->status == 'complete' || ! empty($this->cash),
-            'id' => '<div class="text-sm leading-5 text-center"> ' . $this->id . '</div>',
-            'branch_name' => '<div class="text-sm leading-5 text-center"> ' . $this->branch_name . '</div>',
-            'customer_name' => '<div class="text-sm leading-5 text-center"> ' . $customer?->name?? 'Customer' . '</div>',
-            'mobile' => '<div class="text-sm leading-5 text-center"> ' . $customer?->mobile?? 'mobile' . '</div>',
-            'branch_name' => '<div class="text-sm leading-5 text-center"> ' . $this->branch_name . '</div>',
-            'invoice_number' => '<div class="text-sm leading-5"> ' . $this->invoice_number . '</div>',
-            'branch_invoice' => '<div class="text-sm leading-5"> <span class="font-semibold">' . $this->branch_name . '</span><br>' . $this->invoice_number . '</div>',
-            'datetime_format' => '<div class="text-sm leading-5"> ' . $this->datetime_format . '</div>',
-            'payment_method_name' => '<div class="text-sm leading-5"> ' . $this->payment_method_name . '</div>',
-            'discount_amount' => '<div class="text-sm leading-5 text-right"> ' . $this->discount_amount . '</div>',
-            'commission_amount' => '<div class="text-sm leading-5 text-right"> ' . $this->commission_amount . '</div>',
-            'due_amount' => '<div class="text-sm leading-5 text-right">' . $this->total - $this->cash . '</div>',
-            'detail' => '<div class="text-sm leading-5"> ' . $this->description . '<br><span class="font-medium">' . $this->payment_method_name . '</span></div>',
-            'description' => '<div class="text-sm leading-5"> ' . $this->description . '</div>',
-            'vat_amount' => '<div class="text-sm leading-5 text-right">' . $this->vat_amount . '</div>',
-            'total' => '<div class="text-sm leading-5 text-right">' . $this->total . '</div>',
-            // 'image' => '<img src="' . $imageUrl. '" alt="Image" class="h-10 w-10">',
-            'image' => $imageUrl,
-            'action' => $this->action(),
+            'is_complete'         => $this->status == 'complete' || ! empty($this->cash),
+            'id'                  => $this->id,
+            'branch_name'         => $this->branch_name,
+            'customer_name'       => $customer?->name ?? 'Customer',
+            'mobile'              => $customer?->mobile ?? 'mobile',
+            'invoice_number'      => $this->invoice_number,
+            'branch_invoice'      => $this->branch_name . ' - ' . $this->invoice_number,
+            'datetime_format'     => $this->datetime_format,
+            'payment_method_name' => $this->payment_method_name,
+            'discount_amount'     => $this->discount_amount,
+            'commission_amount'   => $this->commission_amount,
+            'due_amount'          => $due_amount,
+            'detail'              => $this->description . ' | ' . $this->payment_method_name,
+            'description'         => $this->description,
+            'vat_amount'          => $this->vat_amount,
+            'total'               => $this->total,
+            'image'               => $imageUrl,
+            'action'              => $this->action(),
         ];
     }
 
