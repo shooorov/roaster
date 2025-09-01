@@ -1,28 +1,18 @@
 <script setup>
-import { reactive, onMounted, onUpdated } from 'vue'
-import { router, Head, Link } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
+import { onMounted, onUpdated, reactive } from 'vue'
 
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import Breadcrumb from '@/Components/Breadcrumb.vue'
 import Alert from '@/Components/Alert.vue'
+import Breadcrumb from '@/Components/Breadcrumb.vue'
 import Combobox from '@/Components/Combobox.vue'
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 
-import { PlusIcon, ChevronUpDownIcon } from '@heroicons/vue/24/solid'
+import { PlusIcon } from '@heroicons/vue/24/solid'
 
-import {
-    ArrowTopRightOnSquareIcon,
-    FunnelIcon,
-    PencilSquareIcon,
-    PrinterIcon,
-    TrashIcon,
-    MagnifyingGlassIcon,
-    ShoppingCartIcon,
-    ArrowPathIcon,
-    TableCellsIcon
-} from '@heroicons/vue/24/outline'
+import { ArrowPathIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import { watch } from 'vue'
 
 const props = defineProps({
-    
     string_change: Object,
     navigation: Object,
 
@@ -36,15 +26,19 @@ const props = defineProps({
     waiters: Array,
     customers: Array,
     payment_methods: Array
-    
 })
 
 const form = reactive(props.filter)
 // const form = useForm(props.filter)
 
 const breadcrumbs = [
-    { name: 'Orders', href: route('order.index'), current: false },
+    { name: props.string_change.order_s, href: route('order.index'), current: false },
     { name: 'List Page', href: '#', current: false }
+]
+
+const bill_statuses = [
+    { id: 'Paid', name: 'Paid' },
+    { id: 'Due', name: 'Due' }
 ]
 
 onUpdated(() => {
@@ -56,16 +50,25 @@ onMounted(() => {
     console.log('mounted')
     loadAjaxData()
 })
-window.showFullScreenImage = function(imageUrl) {
-    window.open(imageUrl, '_blank', 'fullscreen=yes');
+
+window.showFullScreenImage = function (imageUrl) {
+    window.open(imageUrl, '_blank', 'fullscreen=yes')
 }
+
+watch(
+    () => form.customer_name,
+    (name) => {
+        const customer = props.customers.find((c) => c.name === name)
+        form.customer_id = customer ? customer.id : null
+    }
+)
 
 const loadAjaxData = () => {
     $('#ajax_table').DataTable({
         responsive: true,
         serverSide: true,
         processing: true,
-		destroy: true,
+        destroy: true,
         lengthMenu: [
             [10, 10, 25, 50, 100, 200],
             [10, 10, 25, 50, 100, 200]
@@ -93,9 +96,9 @@ const loadAjaxData = () => {
             {
                 class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5',
                 // data: 'datetime_format'
-                render: function(data, type, row, meta) {
-                return row.datetime_format + ' ' + row.branch_invoice;
-            }
+                render: function (data, type, row, meta) {
+                    return row.datetime_format + ' ' + row.branch_invoice
+                }
             },
             // {
             //     class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5',
@@ -109,26 +112,25 @@ const loadAjaxData = () => {
             {
                 class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
                 data: 'discount_amount'
-                
             },
             // {
             //     class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
             //     data: 'image',
             // },
             {
-          class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
-          data: 'image',
-            render: function(data, type, row) {
-                // Check if the data is not empty
-                if (data) {
-                    // Return HTML with onclick event to show full-screen image
-                    return `<img src="${data}" alt="Image" class="h-10 w-10" onclick="showFullScreenImage('${data}')">`;
-                } else {
-                    // If data is empty or undefined, return an empty string
-                    return '';
+                class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
+                data: 'image',
+                render: function (data, type, row) {
+                    // Check if the data is not empty
+                    if (data) {
+                        // Return HTML with onclick event to show full-screen image
+                        return `<img src="${data}" alt="Image" class="h-10 w-10" onclick="showFullScreenImage('${data}')">`
+                    } else {
+                        // If data is empty or undefined, return an empty string
+                        return ''
+                    }
                 }
-            }  
-        },
+            },
             {
                 class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
                 data: 'commission_amount'
@@ -171,7 +173,6 @@ const destroy = (route, message = 'Are you sure you want to delete?') => {
         router.delete(route)
     }
 }
-
 </script>
 <template>
     <Head title="Orders" />
@@ -196,20 +197,19 @@ const destroy = (route, message = 'Are you sure you want to delete?') => {
                 </div>
             </div>
 
-
             <div class="py-5">
                 <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
                     <div class="bg-white shadow sm:rounded-lg">
                         <div class="flex flex-col sm:flex-row sm:justify-between items-center px-4 py-5 border-b border-gray-200 sm:px-8">
                             <p class="max-w-2xl leading-10 text-gray-700 text-lg font-medium mb-4 sm:mb-0">
-                                Orders
+                                {{ string_change.order_s }}
                                 <!-- <span v-if="start_date != end_date">({{ start_date }} - {{ end_date }})</span>
 								<span v-else>({{ start_date }})</span> -->
                             </p>
                             <div class="flex-shrink-0 flex space-x-3"></div>
                         </div>
 
-						<Alert />
+                        <Alert />
 
                         <form @submit.prevent="submit">
                             <dl class="px-5 py-5 mx-auto max-w-5xl">
@@ -226,7 +226,14 @@ const destroy = (route, message = 'Are you sure you want to delete?') => {
 
                                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700">Customer</label>
-                                        <Combobox class="mt-1" v-model="filter.customer_id" :items="customers" />
+                                        <input
+                                            v-model="filter.customer_name"
+                                            list="customer-list"
+                                            placeholder="Select a customer"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 bg-white" />
+                                        <datalist id="customer-list">
+                                            <option v-for="customer in customers" :key="customer.id" :value="customer.name"></option>
+                                        </datalist>
                                     </dd>
 
                                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -234,15 +241,10 @@ const destroy = (route, message = 'Are you sure you want to delete?') => {
                                         <Combobox class="mt-1" v-model="filter.payment_method_id" :items="payment_methods" />
                                     </dd>
 
-                                    <div>
+                                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700">Bill Status</label>
-                                        <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md" v-model="filter.bill_status">
-                                            <option disabled selected value="">Select</option> <!-- Placeholder option -->
-                                            <option value="Paid">Paid</option>
-                                            <option value="Due">Due</option>
-                                        </select>
-                                    </div>
-
+                                        <Combobox class="mt-1" v-model="filter.bill_status" :items="bill_statuses" />
+                                    </dd>
 
                                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700">Start Date</label>
@@ -262,17 +264,17 @@ const destroy = (route, message = 'Are you sure you want to delete?') => {
 
                                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700">Action</label>
-                                        <div class="inline-flex mt-1 rounded" role="group">
+                                        <div class="flex mt-1 space-x-0 rounded" role="group">
                                             <button
                                                 type="submit"
-                                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-l shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600">
+                                                class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-l shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600">
                                                 <MagnifyingGlassIcon class="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
                                                 Search
                                             </button>
 
                                             <button
                                                 @click="clearFilter"
-                                                class="inline-flex items-center px-4 py-1 border border-primary-600 rounded-r shadow-sm text-sm font-medium text-primary-700 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600">
+                                                class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-primary-600 rounded-r shadow-sm text-sm font-medium text-primary-700 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600">
                                                 <ArrowPathIcon class="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
                                                 Clear
                                             </button>

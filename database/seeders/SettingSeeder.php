@@ -20,6 +20,11 @@ class SettingSeeder extends Seeder
         $settings = [
             // Menu Text Change by Company
             // Do not change the order(rename may not work properly)
+            'order' => [
+                'type' => 'rename',
+                'title' => 'Order',
+                'value' => 'Order Bill',
+            ],
             'item_inventory' => [
                 'type' => 'rename',
                 'title' => 'Item Inventory',
@@ -45,22 +50,30 @@ class SettingSeeder extends Seeder
             'company_name' => [
                 'type' => 'text',
                 'title' => 'Restaurant Name',
-                'value' => 'Coal & Coffee',
+                // 'value' => 'Coal & Coffee',
+                'value' => 'Coffee Roasters',
             ],
             'company_address' => [
                 'type' => 'textarea',
                 'title' => 'Restaurant Address',
-                'value' => 'House no.60, Sonargaon janapath road, Sector 9 uttara',
+                // 'value' => 'House no.60, Sonargaon janapath road, Sector 9 uttara',
+                'value' => 'Plot No - 1421 & 1422,Road 8/2,Block-F,Sagupta Housing Limited, Mirpur, Pallabi, Dhaka 1216',
             ],
             'bin_number' => [
                 'type' => 'textarea',
                 'title' => 'Bin Number',
-                'value' => 'BIN: 003649774-0101',
+                // 'value' => 'BIN: 003649774-0101',
+                'value' => '',
             ],
             'day_started_at' => [
                 'type' => 'text',
                 'title' => 'Day Started At',
                 'value' => '00:00',
+            ],
+            'token_value' => [
+                'type' => 'text',
+                'title' => 'Token Value',
+                'value' => '5',
             ],
         ];
 

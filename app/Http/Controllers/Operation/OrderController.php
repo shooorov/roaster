@@ -15,6 +15,7 @@ use App\Http\Cache\CacheUser;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Order as ResourcesOrder;
 use App\Http\Resources\OrderLoadCollection;
+use App\Models\Customer;
 use App\Models\CustomerToken;
 use App\Models\Order;
 use App\Models\OrderApproval;
@@ -65,14 +66,20 @@ class OrderController extends Controller
         }
 
         $branch_id = UseBranch::id();
-        $customers = CacheCustomer::get();
+        $customers = $customers = Customer::select('id', 'mobile', 'name')->get()->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'name' => $c->mobile . ' - ' . $c->name
+            ];
+        });
+
         $payment_methods = CachePaymentMethod::get();
         $branches = CacheBranch::get();
 
         $order_managers = Order::select('manager_id')->groupBy('manager_id')->pluck('manager_id')->toArray();
         $managers = CacheUser::get()->whereIn('id', $order_managers)->values()->all();
 
-        $branch_users = CacheBranchAccess::get()->filter(fn ($item) => $item->branch_id == $branch_id && $item->is_checked)->pluck('user_id');
+        $branch_users = CacheBranchAccess::get()->filter(fn($item) => $item->branch_id == $branch_id && $item->is_checked)->pluck('user_id');
         $waiters = User::whereIsWaiter(true)->whereIn('id', $branch_users->toArray())->get();
 
         $params = [
@@ -157,12 +164,12 @@ class OrderController extends Controller
         //$recordsTotal = (clone $records)->groupBy('orders.id')->get()->count();
         $recordsTotal = (clone $records)->count();
         $records->where(function ($query) use ($filter) {
-            $query->where('orders.invoice_number', 'like', '%'.$filter.'%')
-                ->orWhere('payment_methods.name', 'like', '%'.$filter.'%')
-                ->orWhere('customers.mobile', 'like', '%'.$filter.'%')
-                ->orWhere('customers.name', 'like', '%'.$filter.'%')
-                ->orWhere('waiters.name', 'like', '%'.$filter.'%')
-                ->orWhere('managers.name', 'like', '%'.$filter.'%');
+            $query->where('orders.invoice_number', 'like', '%' . $filter . '%')
+                ->orWhere('payment_methods.name', 'like', '%' . $filter . '%')
+                ->orWhere('customers.mobile', 'like', '%' . $filter . '%')
+                ->orWhere('customers.name', 'like', '%' . $filter . '%')
+                ->orWhere('waiters.name', 'like', '%' . $filter . '%')
+                ->orWhere('managers.name', 'like', '%' . $filter . '%');
         });
 
         //$recordsFiltered = (clone $records)->groupBy('orders.id')->get()->count();
@@ -202,7 +209,7 @@ class OrderController extends Controller
         $filter = $request->search['value'];
         $sort_dir = $request->order[0]['dir'];
         $sort_column = $request->order[0]['column'];
-        
+
 
         $status = $request->status;
         $manager_id = $request->manager_id;
@@ -248,13 +255,12 @@ class OrderController extends Controller
             })
             ->when($bill_status === 'Due', function ($query) {
                 $query->whereRaw('total - cash != 0');
-            })
-            ;
+            });
 
         $recordsTotal = (clone $records)->count();
 
         $records->where(function ($query) use ($filter) {
-            $query->where('orders.invoice_number', 'like', '%'.$filter.'%');
+            $query->where('orders.invoice_number', 'like', '%' . $filter . '%');
         });
 
         $recordsFiltered = (clone $records)->count();
@@ -316,30 +322,29 @@ class OrderController extends Controller
 
         try {
             ProductInventory::where('order_id', $order->id)->delete();
-			
-			OrderApproval::where('order_id', $order->id)->delete();
+
+            OrderApproval::where('order_id', $order->id)->delete();
 
             OrderDelivery::where('order_id', $order->id)->delete();
 
             OrderHistory::where('order_id', $order->id)->delete();
 
-			OrderPaymentMethod::where('order_id', $order->id)->delete();
-			
-			OrderProduct::where('order_id', $order->id)->delete();
+            OrderPaymentMethod::where('order_id', $order->id)->delete();
 
-			OrderProductTopping::where('order_id', $order->id)->delete();
+            OrderProduct::where('order_id', $order->id)->delete();
+
+            OrderProductTopping::where('order_id', $order->id)->delete();
 
             Production::where('order_id', $order->id)->delete();
 
             CustomerToken::where('order_id', $order->id)->delete();
 
-			$order->delete();
+            $order->delete();
 
-			DB::commit();
-
-		} catch (\Exception $e) {
+            DB::commit();
+        } catch (\Exception $e) {
             DB::rollback();
-			throw($e);
+            throw ($e);
             return back()->withInput()->with('fail', __('Order removing request failed!'));
         }
 
@@ -375,6 +380,6 @@ class OrderController extends Controller
 
         CacheOrder::forget();
 
-        return back()->with('success', 'Status changed to "'.$order->statuses[$request->status].'" successfully');
+        return back()->with('success', 'Status changed to "' . $order->statuses[$request->status] . '" successfully');
     }
 }
