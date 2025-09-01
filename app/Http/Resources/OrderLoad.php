@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Customer;
 use App\RolePermission;
 use App\UseBranch;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -34,9 +35,13 @@ class OrderLoad extends JsonResource
             // If image data is invalid or missing, set the image URL to empty or a placeholder
             $imageUrl = asset('img/product.jpg'); // or any placeholder URL
         }
+        $customer = Customer::find($this->customer_id);
         return [
             'is_complete' => $this->status == 'complete' || ! empty($this->cash),
             'id' => '<div class="text-sm leading-5 text-center"> ' . $this->id . '</div>',
+            'branch_name' => '<div class="text-sm leading-5 text-center"> ' . $this->branch_name . '</div>',
+            'customer_name' => '<div class="text-sm leading-5 text-center"> ' . $customer?->name?? 'Customer' . '</div>',
+            'mobile' => '<div class="text-sm leading-5 text-center"> ' . $customer?->mobile?? 'mobile' . '</div>',
             'branch_name' => '<div class="text-sm leading-5 text-center"> ' . $this->branch_name . '</div>',
             'invoice_number' => '<div class="text-sm leading-5"> ' . $this->invoice_number . '</div>',
             'branch_invoice' => '<div class="text-sm leading-5"> <span class="font-semibold">' . $this->branch_name . '</span><br>' . $this->invoice_number . '</div>',

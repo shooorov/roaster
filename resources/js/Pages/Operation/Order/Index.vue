@@ -81,8 +81,12 @@ const loadAjaxData = () => {
             data: form
         },
         createdRow: function (row, data) {
-            if (data.is_complete) $(row).addClass('text-gray-700')
-            else $(row).addClass('text-red-700')
+            // Turn row red if due_amount > 0
+            if (parseFloat(data.due_amount) > 0) {
+                $(row).addClass('text-red-700')
+            } else {
+                $(row).addClass('text-gray-700')
+            }
         },
         order: [[1, 'desc']],
         columns: [
@@ -95,63 +99,24 @@ const loadAjaxData = () => {
             },
             {
                 class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5',
-                // data: 'datetime_format'
                 render: function (data, type, row, meta) {
                     return row.datetime_format + ' ' + row.branch_invoice
                 }
             },
-            // {
-            //     class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5',
-            //     data: 'branch_invoice'
-            // },
-            {
-                class: 'w-30 px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5',
-                data: 'detail',
-                sortable: false
-            },
-            {
-                class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
-                data: 'discount_amount'
-            },
-            // {
-            //     class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
-            //     data: 'image',
-            // },
+            { class: 'w-30 px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5', data: 'customer_name' },
+            { class: 'w-30 px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5', data: 'mobile' },
+            { class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'discount_amount' },
             {
                 class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
                 data: 'image',
                 render: function (data, type, row) {
-                    // Check if the data is not empty
-                    if (data) {
-                        // Return HTML with onclick event to show full-screen image
-                        return `<img src="${data}" alt="Image" class="h-10 w-10" onclick="showFullScreenImage('${data}')">`
-                    } else {
-                        // If data is empty or undefined, return an empty string
-                        return ''
-                    }
+                    return data ? `<img src="${data}" alt="Image" class="h-10 w-10" onclick="showFullScreenImage('${data}')">` : ''
                 }
             },
-            {
-                class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
-                data: 'commission_amount'
-            },
-            // {
-            //     class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
-            //     data: 'vat_amount'
-            // },
-            {
-                class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
-                data: 'total'
-            },
-            {
-                class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5',
-                data: 'due_amount'
-            },
-            {
-                class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5',
-                data: 'action',
-                sortable: false
-            }
+            { class: 'w-10 px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'commission_amount' },
+            { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'total' },
+            { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'due_amount' },
+            { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5', data: 'action', sortable: false }
         ]
     })
 }
@@ -289,8 +254,9 @@ const destroy = (route, message = 'Are you sure you want to delete?') => {
                                 <tr>
                                     <th class="w-5 px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-left">S.N.</th>
                                     <th class="px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-left">Date</th>
-                                    <!-- <th class="px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-left">Number</th> -->
-                                    <th class="w-30 px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-left">Description</th>
+                                    <th class="px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-left">Customer</th>
+                                    <th class="px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-left">Number</th>
+                                    <!-- <th class="w-30 px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-left">Description</th> -->
                                     <th class="w-20 px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-right">Discount</th>
                                     <th class="w-20 px-5 py-2 border-b bg-gray-100 text-xs font-bold uppercase tracking-wider text-right">Image</th>
 

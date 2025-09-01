@@ -233,6 +233,7 @@ class OrderController extends Controller
         }
 
         $records = Order::query()
+            ->leftJoin('customers', 'orders.customer_id', '=', 'customers.id')
             ->leftJoin('payment_methods', 'orders.payment_method_id', '=', 'payment_methods.id')
             ->select('orders.*')
             ->when($start_date, function ($query, $start_date) {
@@ -275,6 +276,8 @@ class OrderController extends Controller
             '',
             'orders.date',
             'orders.invoice_number',
+            'customers.name',
+            'customers.mobile',
             '',
             'orders.discount_amount',
             'orders.commission_amount',
