@@ -83,11 +83,9 @@ const loadAjaxData = () => {
         order: [[1, 'desc']],
         rowCallback: function (row, data) {
             if (parseFloat(data.due_amount) > 0) {
-                // row.style.backgroundColor = '#fee2e2' // light red
-                row.style.color = '#b91c1c' // dark red text
+                row.classList.add('text-red-600')
             } else {
-                row.style.backgroundColor = ''
-                row.style.color = ''
+                row.classList.remove('text-red-600')
             }
         },
         columns: [
@@ -118,7 +116,7 @@ const loadAjaxData = () => {
             { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'total' },
             { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-nowrap border-b border-gray-200 text-sm leading-5', data: 'due_amount' },
             { class: 'px-2 sm:px-4 py-1 sm:py-2 whitespace-wrap border-b border-gray-200 text-sm leading-5', data: 'action', sortable: false }
-        ],
+        ]
     })
 }
 
