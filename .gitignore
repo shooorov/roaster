@@ -1,8 +1,3 @@
-# These are some examples of commonly ignored file patterns.
-# You should customize this list as applicable to your project.
-# Learn more about .gitignore:
-#     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
-
 # Node artifact files
 node_modules/
 dist/
@@ -47,29 +42,52 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+
+# PHPUnit & test cache
 /.phpunit.cache
-/node_modules
-# /public/build
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
+.phpunit.result.cache
+
+# Node / Yarn / NPM logs
+npm-debug.log
+yarn-error.log
+
+# Laravel environment files
 .env
 .env.backup
 .env.production
-.phpunit.result.cache
 Homestead.json
 Homestead.yaml
 auth.json
-npm-debug.log
-yarn-error.log
-/.fleet
-/.idea
-/.vscode
-error_log
+
+# Laravel storage
+/storage/*.key
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+
+# Laravel compiled & cached files
+/bootstrap/cache/*.php
+
+# Laravel public builds
+/public/hot
+/public/build/
+/public/mix-manifest.json
 /public/.user.ini
 /public/php.ini
-composer.lock
+
+# Vendor directory
+/vendor
+
+# Editor / IDE files
+/.vscode
+/.fleet
+*.sublime-workspace
+*.sublime-project
+
+# Other OS or temporary files
+error_log
 .DS_Store
 .htaccess
-
+*.swp
+*.swo
