@@ -65,6 +65,7 @@ auth.json
 /storage/framework/sessions/*
 /storage/framework/views/*
 /storage/logs/*
+/storage/app/public/*
 
 # Laravel compiled & cached files
 /bootstrap/cache/*.php
@@ -75,6 +76,9 @@ auth.json
 /public/mix-manifest.json
 /public/.user.ini
 /public/php.ini
+
+# If /public/storage is just a copy of files, ignore it
+/public/storage
 
 # Vendor directory
 /vendor
